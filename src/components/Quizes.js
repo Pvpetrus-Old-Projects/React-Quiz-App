@@ -73,37 +73,40 @@ class Quizes extends React.Component {
     }
 
     addQuiz(s) {
-        this.setState(state => {
-            var quizes = state.quizes;
-            var id;
-            if(quizes.length > 0) id = Math.max(...state.quizes.map(quiz => quiz.index_nr)) + 1;
-            else id = 1;
-            var answers = [s.answer1, s.answer2, s.answer3, s.answer4];
-            let newQuiz = new QuizClass(id, s.category, s.question, answers, parseInt(s.right_answer_index));
-            quizes.push(newQuiz);
-            return {quizes: quizes}
-        });
+        var quizes = this.state.quizes;
+        var id;
+        if(quizes.length > 0) id = Math.max(...this.state.quizes.map(quiz => quiz.index_nr)) + 1;
+        else id = 1;
+        var answers = [s.answer1, s.answer2, s.answer3, s.answer4];
+        let newQuiz = new QuizClass(id, s.category, s.question, answers, parseInt(s.right_answer_index));
+        quizes.push(newQuiz);
+
+        this.setState({
+            quizes:quizes
+        })
     }
 
     editQuiz(index, s) {
-        this.setState(state => {
-            var quizes = state.quizes;
-            var q = quizes.map(quiz => {
-                if(quiz.index_nr===index) {
-                    quiz.category = s.editCategory
-                    quiz.question = s.editQuestion
-                    var editAnswers = [s.editAnswer1,s.editAnswer2,s.editAnswer3,s.editAnswer4]
-                    quiz.answers = editAnswers
-                    quiz.right_answer_index = parseInt(s.editRightAnswerIndex)
-                    return quiz;
-                }
-                else {
-                    return quiz;
-                }
-            })
-            return {quizes: q}
+        var quizes = this.state.quizes;
+        var q = quizes.map(quiz => {
+            if(quiz.index_nr===index) {
+                quiz.category = s.editCategory
+                quiz.question = s.editQuestion
+                var editAnswers = [s.editAnswer1,s.editAnswer2,s.editAnswer3,s.editAnswer4]
+                quiz.answers = editAnswers
+                quiz.right_answer_index = parseInt(s.editRightAnswerIndex)
+                return quiz;
+            }
+            else {
+                return quiz;
+            }
+        })
+
+        this.setState({
+            quizes:q
         });
-        this.createNotification('Quiz został edytowany');
+
+        this.createNotification('Quiz został edytowany')
     }
 
     deleteQuiz(index) {
