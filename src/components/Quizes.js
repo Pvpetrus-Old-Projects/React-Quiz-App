@@ -1,47 +1,38 @@
 import React from 'react';
 import Quiz from './Quiz';
-import AddQuiz from './AddQuiz'
-import { Button } from 'react-bootstrap';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import QuizClass from '../class/QuizClass';
 import EditForm from '../forms/EditForm';
 import DeleteForm from '../forms/DeleteForm';
 import { NotificationContainer } from 'react-notifications';
 import 'react-notifications/lib/notifications.css'
-import NotificationManager from 'react-notifications/lib/NotificationManager';
+import * as QuizesApi from '../api/QuizesApi'
 
-const list = [
-    new QuizClass(1,"Matematyka","1 mendel - ile to sztuk?",["60", "14", "7", "15"],4),
-    new QuizClass(2,"Matematyka","Do jakich liczb przystaje (mod 8) kwadrat liczby naturalnej?",["5 lub 6", "2 lub 3", "1, 2 lub 7", "0, 1 lub 4"],4),
-    new QuizClass(3,"Lektury","Dlaczego Wokulski, bohater \"Lalki\", miał czerwone dłonie?",["Zafarbował je","Odmroził je na Syberii","Z powodu choroby","Poparzył je w dzieciństwie"],2)
-  ];
 class Quizes extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            quizes: [...list],
+            quizes: [],
         };
         this.showEditForm = this.showEditForm.bind(this);
         this.showDeleteForm = this.showDeleteForm.bind(this);
-        this.addQuiz = this.addQuiz.bind(this);
         this.editQuiz = this.editQuiz.bind(this);
         this.deleteQuiz = this.deleteQuiz.bind(this);
     }
 
-    createNotification(message) {
-        NotificationManager.success('Success', message);
-    }
-
-    onChange(e) {
-        var name = e.target.id;
-        this.setState({
-            [name]: e.target.value
-        })
+    componentDidMount(){
+        const {quizes} = this.state;
+        if(quizes.length === 0) {
+          QuizesApi.getAllQuizes()
+          .then(quizes => {
+            this.setState({
+              quizes: quizes
+            })
+          })
+        }
     }
 
     showEditForm(id) {
-        console.log(id)
         const { quizes } = this.state;
         confirmAlert({
             customUI: ({ onClose }) => {
@@ -65,60 +56,54 @@ class Quizes extends React.Component {
         })
     }
 
-    onClick() {
-        confirmAlert({
-            customUI: ({onClose}) => {
-                <div>
-                    <hi>Dodaj zawartość</hi>
-                    <p><textarea cols="50" rows="10" id="question" defaultValue={this.state.question} onChange={(e) => this.onChange(e)}></textarea></p>
-                    <Button style={{float: "right"}} variant="danger" onClick={onClose} >Zamknij</Button>
-                </div>
-            }
-        })
+    updateQuizesList = (action, body) => {
+        switch (action) {
+          case "PUT":
+            var list = this.state.quizes;
+            var quizIndex = list.findIndex(quiz => quiz.index_nr === body.index_nr);
+            list[quizIndex].category = body.category;
+            list[quizIndex].question = body.question;
+            list[quizIndex].answers = body.answers;
+            list[quizIndex].right_answer_index = body.right_answer_index;
+            this.setState({
+              quizes: list
+            });
+            break;
+          case "DELETE":
+            var list = this.state.quizes;
+            var quizIndex = list.findIndex(quiz => quiz.index_nr === body);
+            list.splice(quizIndex,1)
+            this.setState({
+              quizes: list
+            });
+            break;
+          default:
+            break;
+        }
     }
 
-    addQuiz(s) {
-        var quizes = this.state.quizes;
-        var id;
-        if(quizes.length > 0) id = Math.max(...this.state.quizes.map(quiz => quiz.index_nr)) + 1;
-        else id = 1;
-        var answers = [s.answer1, s.answer2, s.answer3, s.answer4];
-        let newQuiz = new QuizClass(id, s.category, s.question, answers, parseInt(s.right_answer_index));
-        quizes.push(newQuiz);
-
-        this.setState({
-            quizes:quizes
-        })
-    }
-
-    editQuiz(index, s) {
-        var quizes = this.state.quizes;
-        var q = quizes.map(quiz => {
-            if(quiz.index_nr===index) {
-                quiz.category = s.editCategory
-                quiz.question = s.editQuestion
-                var editAnswers = [s.editAnswer1,s.editAnswer2,s.editAnswer3,s.editAnswer4]
-                quiz.answers = editAnswers
-                quiz.right_answer_index = parseInt(s.editRightAnswerIndex)
-                return quiz;
-            }
-            else {
-                return quiz;
-            }
-        })
-
-        this.setState({
-            quizes:q
+    editQuiz = (index, s) => {
+        var body = {
+          "index_nr": index,
+          "category": s.editCategory,
+          "question": s.editQuestion,
+          "answers": [s.editAnswer1,s.editAnswer2,s.editAnswer3,s.editAnswer4],
+          "right_answer_index": parseInt(s.editRightAnswerIndex)
+        }
+        QuizesApi.editQuiz(index, body)
+        .then(response => {
+          if (response.status === 200) {
+            this.updateQuizesList("PUT", body);
+          }
         });
-
-        this.createNotification('Quiz został edytowany')
     }
 
-    deleteQuiz(index) {
-        this.setState(state => {
-            var quizes = state.quizes;
-            var q = quizes.filter(quiz => quiz.index_nr!==index);
-            return {quizes: q}
+    deleteQuiz = (id) => {
+        QuizesApi.deleteQuiz(id)
+        .then(response => {
+          if(response.status === 204) {
+            this.updateQuizesList("DELETE", id)
+          }
         });
     }
 
