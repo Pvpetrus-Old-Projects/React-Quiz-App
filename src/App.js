@@ -11,6 +11,7 @@ import Layout from './components/Layout';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import 'react-notifications/lib/notifications.css'
 import * as QuizesApi from './api/QuizesApi'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 class App extends React.Component {
   constructor(props) {
