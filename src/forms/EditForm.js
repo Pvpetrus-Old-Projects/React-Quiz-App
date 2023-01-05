@@ -6,8 +6,6 @@ import * as Icon from "react-bootstrap-icons"
 class EditForm extends React.Component {
     constructor(props) {
         super(props);
-        console.log(props.index)
-        console.log(props.quizes)
         var q = props.quizes.filter(quiz => quiz.index_nr===props.index);
 
         this.state = {
@@ -65,7 +63,7 @@ class EditForm extends React.Component {
                     <input type="number" id="editRightAnswerIndex" defaultValue={q[0].right_answer_index} style={{border: "none"}} onChange={(e) => this.onChange(e)} />
                 </div>
                 <div className='quizEditButton'>
-                    <Button variant='primary' onClick={() => editQuiz(index, this.state)}>Zapisz</Button>
+                    <Button variant='primary' onClick={() => {editQuiz(index, this.state); onClose()}}>Zapisz</Button>
                 </div>
             </div>
         );
