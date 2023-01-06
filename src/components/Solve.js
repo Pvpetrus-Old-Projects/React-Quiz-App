@@ -131,7 +131,7 @@ class Solve extends React.Component {
 
             {this.state.endOfQuiz ?
               <div >
-                <h3 style={{color:"green"}}>You have successfully finished the quiz!</h3><br></br>
+                <h3 style={{ color: "green" }}>You have successfully finished the quiz!</h3><br></br>
                 <h4>Your score: {this.state.score}/{this.state.quizQuestions.length}</h4>
               </div>
               : <span></span>}

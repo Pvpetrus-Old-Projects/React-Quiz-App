@@ -85,10 +85,10 @@ class Quizes extends React.Component {
     editQuiz = (index, s) => {
         var body = {
           "index_nr": index,
-          "category": s.editCategory,
-          "question": s.editQuestion,
-          "answers": [s.editAnswer1,s.editAnswer2,s.editAnswer3,s.editAnswer4],
-          "right_answer_index": parseInt(s.editRightAnswerIndex)
+          "category": s.category,
+          "question": s.question,
+          "answers": [s.answer1,s.answer2,s.answer3,s.answer4],
+          "right_answer_index": parseInt(s.right_answer_index)
         }
         QuizesApi.editQuiz(index, body)
         .then(response => {
