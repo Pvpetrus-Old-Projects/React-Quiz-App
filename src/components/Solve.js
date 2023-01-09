@@ -90,10 +90,16 @@ class Solve extends React.Component {
     })
   }
   finishQuiz() {
-    this.setState({
-      currentQuestionIndex: 0,
-      beginClicked: false,
-      endOfQuiz: true
+    const point = this.state.answerIndex == this.state.quizQuestions[this.state.currentQuestionIndex].right_answer_index ? 1 : 0;
+
+    this.setState(state => {
+      return {
+        currentQuestionIndex: 0,
+        answerIndex: 0,
+        score: (state.score + point),
+        beginClicked: false,
+        endOfQuiz: true
+      }
     })
   }
 
