@@ -14,30 +14,6 @@ import * as QuizesApi from './api/QuizesApi'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 class App extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-        quizes: [],
-    };
-    QuizesApi.getAllQuizes()
-        .then(quizes => {
-          this.setState({
-            quizes: quizes
-          })
-        })
-  }
-
-  componentDidMount(){
-      const {quizes} = this.state;
-      if(quizes.length === 0) {
-        QuizesApi.getAllQuizes()
-        .then(quizes => {
-          this.setState({
-            quizes: quizes
-          })
-        })
-      }
-  }
 
   addQuiz = (s) => {
     var body = {
@@ -63,21 +39,6 @@ class App extends React.Component {
             <Route path="solve" element={<Solve />} />
             <Route path="add" element={<AddQuiz addQuiz={this.addQuiz}/>} />
             <Route path="*" element={<Solve />} />
-            <Route path="/quiz/:id" element={
-              this.state.quizes.filter(q => q.index_nr === 1).map((quiz, key) => {
-                    return (
-                        <Quiz 
-                        key={key}
-                        index_nr={quiz.index_nr}
-                        category={quiz.category}
-                        question={quiz.question}
-                        answers={quiz.answers}
-                        right_answer_index={quiz.right_answer_index}
-                        showEditForm={this.showEditForm}
-                        showDeleteForm={this.showDeleteForm}
-                        />
-                    );
-                })} />
           </Route>
         </Routes>
       </BrowserRouter>
