@@ -75,7 +75,9 @@ class Solve extends React.Component {
     this.setState({
       quizQuestions: quizQuestions,
       beginClicked: true,
-      currentQuestionIndex: 0
+      currentQuestionIndex: 0,
+      endOfQuiz:true,
+      score:0
     })
   }
   loadNextQuestion() {
@@ -139,7 +141,7 @@ class Solve extends React.Component {
 
               : <span></span>}
 
-            {this.state.endOfQuiz ?
+            {this.state.endOfQuiz===true && this.state.beginClicked===false ?
               <div >
                 <h3 style={{ color: "green" }}>You have successfully finished the quiz!</h3><br></br>
                 <h4>Your score: {this.state.score}/{this.state.quizQuestions.length}</h4>
